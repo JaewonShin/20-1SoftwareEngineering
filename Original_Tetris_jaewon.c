@@ -11,6 +11,16 @@
 #include <locale.h>
 #include <ncursesw/curses.h> //NCURSES.h
 
+/*색상 속성 필드*/
+#define COLOR_BLACK 0
+#define COLOR_RED 1
+#define COLOR_GREEN 2
+#define COLOR_YELLOW 3
+#define COLOR_BLUE 4
+#define COLOR_MAGENTA 5
+#define COLOR_CYAN 6
+#define COLOR_WHITE 7
+
 /* 타이머  */
 #define CCHAR 0
 #ifdef CTIME
@@ -36,12 +46,14 @@
 /* 게임 시작, 종료 설정*/
 #define GAME_START 0
 #define GAME_END 1
+#define win1P 1
+#define win2P 2
 
 //블럭모양에따라 삼중배열로 선언 
 
 char i_block[4][4][4] = //막대기 모양 블럭 
 	{
-			1, 1, 1, 1,    0, 0, 0, 0,    0, 0, 0, 0,    0,0,0,0,
+			0, 0, 0, 0,    1, 1, 1, 1,    0, 0, 0, 0,    0,0,0,0,
 			0, 0, 0, 1,   0, 0, 0, 1,    0, 0, 0, 1,    0,0,0,1,
 			0, 0, 0, 0,    0, 0, 0, 0,   0, 0, 0, 0,   1, 1, 1, 1,
 			1, 0, 0, 0,   1, 0, 0, 0,    1, 0, 0, 0,    1,0,0,0
@@ -49,7 +61,7 @@ char i_block[4][4][4] = //막대기 모양 블럭
 
 char t_block[4][4][4] = //ㅏ 모양 블럭 
 	{
-			1, 0, 0, 0,   1, 1, 0, 0,    1, 0, 0, 0,   0, 0, 0, 0,
+			0, 1, 0, 0,   0, 1, 1, 0,    0, 1, 0, 0,   0, 0, 0, 0,
 			1, 1, 1, 0,   0, 1, 0, 0,   0, 0, 0, 0,    0, 0, 0, 0,
 			0, 0, 1, 0,   0, 1, 1, 0,   0, 0, 1, 0,   0, 0, 0, 0,
 			0, 0, 0, 0,   0, 1, 0, 0,   1, 1, 1, 0,   0, 0, 0, 0
@@ -57,7 +69,7 @@ char t_block[4][4][4] = //ㅏ 모양 블럭
 
 char s_block[4][4][4] = //z 모양 블럭 
 	{
-			1, 0, 0, 0,    1, 1, 0, 0,    0, 1, 0, 0,   0, 0, 0, 0,
+			0, 1, 0, 0,    0, 1, 1, 0,    0, 0, 1, 0,   0, 0, 0, 0,
 			0, 1, 1, 0,    1, 1, 0, 0,    0, 0, 0, 0,   0, 0, 0, 0,
 			0, 1, 0, 0,    0, 1, 1, 0,    0, 0, 1, 0,   0, 0, 0, 0,
 			0, 0, 0, 0,   0, 1, 1, 0,    1, 1, 0, 0,    0, 0, 0, 0
@@ -65,7 +77,7 @@ char s_block[4][4][4] = //z 모양 블럭
 
 char z_block[4][4][4] = //반대모양 z 블럭 
 	{
-			0, 1, 0, 0,    1, 1, 0, 0,   1, 0, 0, 0,    0, 0,0, 0,
+			0, 0, 1, 0,    0, 1, 1, 0,   0, 1, 0, 0,    0, 0,0, 0,
 			1, 1, 0, 0,    0, 1, 1, 0,   0, 0, 0, 0,    0, 0, 0, 0,
 			0, 0, 1, 0,    0, 1, 1, 0,   0, 1, 0, 0,    0, 0, 0, 0,
 			0, 0, 0, 0,    1, 1, 0, 0,    0, 1, 1, 0,   0, 0, 0, 0
@@ -73,7 +85,7 @@ char z_block[4][4][4] = //반대모양 z 블럭
 
 char l_block[4][4][4] =//L 모양 블럭 
 	{
-			1, 0, 0, 0,    1, 0, 0, 0,    1, 1, 0, 0,   0, 0, 0, 0,
+			0, 1, 0, 0,    0, 1, 0, 0,    0, 1, 1, 0,   0, 0, 0, 0,
 			1, 1, 1, 0,    1, 0, 0, 0,    0, 0, 0, 0,    0, 0, 0, 0,
 			0, 1, 1, 0,    0, 0, 1, 0,    0, 0, 1, 0,    0, 0, 0, 0,
 			0, 0, 0, 0,    0, 0, 1, 0,    1, 1, 1, 0,    0, 0, 0, 0
@@ -81,22 +93,23 @@ char l_block[4][4][4] =//L 모양 블럭
 
 char j_block[4][4][4] =//반대모양 L 블럭 
 	{
-			0, 1, 0, 0,    0, 1, 0, 0,    1, 1, 0, 0,     0, 0, 0, 0,
+			0, 0, 1, 0,    0, 0, 1, 0,    0, 1, 1, 0,     0, 0, 0, 0,
 			1, 0, 0, 0,    1, 1, 1, 0,    0, 0, 0, 0,    0, 0, 0, 0,
-			1, 1, 0, 0,    1, 0, 0, 0,    1, 0, 0, 0,    0, 0, 0, 0,
+			0, 1, 1, 0,    0, 1, 0, 0,    0, 1, 0, 0,    0, 0, 0, 0,
 			1, 1, 1, 0,    0, 0, 1, 0,    0, 0, 0, 0,    0, 0, 0, 0
 	};
 
 char o_block[4][4][4] =//ㅁ 모양 블럭 
 	{
-			1, 1, 0, 0,    1, 1, 0, 0,    0, 0, 0, 0,    0, 0, 0, 0,
-			1, 1, 0, 0,    1, 1, 0, 0,    0, 0, 0, 0,    0, 0, 0, 0,
-			1, 1, 0, 0,    1, 1, 0, 0,    0, 0, 0, 0,    0, 0, 0, 0,
-			1, 1, 0, 0,    1, 1, 0, 0,    0, 0, 0, 0,    0, 0, 0, 0,
+			0, 1, 1, 0,    0, 1, 1, 0,    0, 0, 0, 0,    0, 0, 0, 0,
+			0, 1, 1, 0,    0, 1, 1, 0,    0, 0, 0, 0,    0, 0, 0, 0,
+			0, 1, 1, 0,    0, 1, 1, 0,    0, 0, 0, 0,    0, 0, 0, 0,
+			0, 1, 1, 0,    0, 1, 1, 0,    0, 0, 0, 0,    0, 0, 0, 0,
 	};
 
 /* 테트리스 블럭이 움직일 수 있는 공간*/
 char tetris_table[21][10];
+char tetris_table2[21][10];
 /* 게임 기록이 저장되는 구조체 선언*/
 static struct result
 {
@@ -109,14 +122,20 @@ static struct result
 	int min;
 	int rank;
 }temp_result;
-
+int pvp = 0;
 int block_number = 0;  /*현재 블록 넘버 변수*/
+int block_number2 = 0;  /*현재 블록 넘버 변수*/
 int next_block_number = 0; /*다음 블록 넘버 변수 */
+int next_block_number2 = 0; /*다음 블록 넘버 변수 */
 int block_state = 0; /*블록 상태, 회전함에 따라 변한다*/
+int block_state2 = 0; /*블록 상태, 회전함에 따라 변한다*/
 int x = 3, y = 0; /*블록이 현재 테트리스판 어디에 위치해 있는지 알려주는 변수*/
+int x2 = 3, y2 = 0; /*블록이 현재 테트리스판 어디에 위치해 있는지 알려주는 변수*/
 int game = GAME_END; /*게임 상태 변수, 게임이 시작되거나 종료됨에 따라 변한다*/
 int best_point = 0; /* 게임 최고 점수를 알려주는 변수*/
+int best_point2 = 0; /* 게임 최고 점수를 알려주는 변수*/
 long point = 0; /* 현재 게임중 득점을 알려주는 변수 */
+long point2 = 0; /* 현재 게임중 득점을 알려주는 변수 */
 int set_ticker(int);/*타이머 등록*/
 int display_menu(void); /* 메뉴를 보여줌 */
 int init_tetris_table(void); /*테트리스판을 초기화 한다. 벽과 공간을 나눔*/
@@ -125,20 +144,38 @@ int game_start(void); /* 게임 시작시 호출되는 함수.   game변수를 �
 int _refresh(int);/* 타이머에 콜백함수로 등록되어 계속 새로고침 하면서 호출되는 함수. 키입력 확인,  화면새로고침, 한줄완성검사등의 계속 상태가 변함을 확인해야 되는 함수를 호출한다 */
 int _refresh2(int);/* 타이머에 콜백함수로 등록되어 계속 새로고침 하면서 호출되는 함수. 키입력 확인,  화면새로고침, 한줄완성검사등의 계속 상태가 변함을 확인해야 되는 함수를 호출한다 */
 int move_block(int);/*이동, 회전키가 입력되면, 충돌검사후 이동시킨다*/
+int move_block2(int);/*이동, 회전키가 입력되면, 충돌검사후 이동시킨다*/
 int drop(void);/* 충돌되기 전까지 블록을 다운시킨다.*/
+int drop2(void);/* 충돌되기 전까지 블록을 다운시킨다.*/
 int collision_test(int); /* 블록이 이동, 회전하기 전에 충돌되는 블록이나 벽이 없는지 확인하는 함수*/
+int collision_test2(int); /* 블록이 이동, 회전하기 전에 충돌되는 블록이나 벽이 없는지 확인하는 함수*/
 int check_one_line(void);/* 한줄이 완성되었는지 확인하는 함수. 완성되면 한줄을 지우고, 점수에 1000점을 더한다*/
+int check_one_line2(void);/* 한줄이 완성되었는지 확인하는 함수. 완성되면 한줄을 지우고, 점수에 1000점을 더한다*/
 int print_result(void);/* 메뉴에서 기록출력시 호출되어 기록을 출력하는 함수*/
 int search_result(void); /*메뉴에서 기록검색시 호출되어 기록을 검색하는 함수*/
 int _getch(void);/*문자를 바로 입력 받을 수 있는 함수*/
-void game_end(void);/*게임 종료시 호출되는 기록저장 및 게임오버 화면 출력하는 함수*/
+void game_end(int);/*게임 종료시 호출되는 기록저장 및 게임오버 화면 출력하는 함수*/
 void tetris(void);/*테트리스게임 중 블럭모양 TETRIS 글자를 그려주는 함수*/
 void tetris2(void);/*게임 시작 시 블럭모양 TETRIS 글자를 그려주는 함수*/
+void tetris2p(void);/*게임 시작 시 블럭모양 TETRIS 글자를 그려주는 함수*/
 
 int main(void)
 {
 	int menu = 1;
 	setlocale(LC_CTYPE, "ko_KR.utf-8");//한국어 및 특수문자 출력을 위한 설정 
+	
+	raw();
+	has_colors();
+	init_color(COLOR_BLUE,0,0,300);
+	init_pair(1,COLOR_RED,COLOR_BLACK);
+	init_pair(2,COLOR_GREEN,COLOR_BLACK);
+	init_pair(3,COLOR_YELLOW,COLOR_BLACK);
+	init_pair(4,COLOR_BLUE,COLOR_BLACK);
+	init_pair(5,COLOR_MAGENTA,COLOR_BLACK);
+	init_pair(6,COLOR_CYAN,COLOR_BLACK);
+	init_pair(7,COLOR_WHITE,COLOR_BLACK);
+	init_pair(8,COLOR_CYAN,COLOR_MAGENTA);
+	start_color();//색상
 
 	while(menu)
 	{
@@ -147,17 +184,24 @@ int main(void)
 		if(menu == 1) //1p 게임 시작 
 		{
 			game = GAME_START;
+			pvp = 0;
 			menu = game_start();
 		}
-		else if(menu == 2)//기록 검색 
+		else if(menu == 2)//2P 
+		{
+			game = GAME_START;
+			pvp = 1;
+			menu = game_start();
+		}
+		else if(menu == 3)//기록 검색 
 		{
 			search_result();
 		}
-		else if(menu == 3)//기록 출력 
+		else if(menu == 4)//기록 출력 
 		{
 			print_result();
 		}
-		else if(menu == 4)//종료 
+		else if(menu == 5)//종료 
 		{
 			clear();
 			endwin();
@@ -212,20 +256,43 @@ int display_menu(void)
 
 	addch(ACS_LRCORNER);
 	move(11,31);	
-	printw("1. Play\n");
+	printw("1. 혼자 하기\n");
 	move(13,31);
-	printw("2. Search\n");
+	printw("2. 같이 하기\n");
 	move(15,31);
-	printw("3. Ranking\n");
+	printw("3. 기록 검색\n");
 	move(17,31);
-	printw("4. Exit\n");
-	move(22,23);
-	printw("system_programming_group9");
-	move(19,27);
-	printw("선택 : ");
+	printw("4. 순위\n");
+	move(19,31);
+	printw("5. 끝내기\n");
+	
+	move(25,24);
+	
+
+	move(21,30);
+	addch(ACS_ULCORNER);
+	for(int i=0; i<10; i++)
+		addch(ACS_HLINE);
+	addch(ACS_URCORNER);
+	move(22,30);
+	addch(ACS_VLINE);
+	
+	move(22,41);
+	addch(ACS_VLINE);
+	move(23,30);
+	addch(ACS_LLCORNER);
+	for(int i=0; i<10; i++)
+		addch(ACS_HLINE);
+	addch(ACS_LRCORNER);
+	
+	move(22,31);	
+	printw(" 선택 : ");
+	
+	
+	
 
 	scanw("%d",&menu); //사용자로부터 메뉴선택 입력받음 
-		if(menu < 1 || menu > 5)
+		if(menu < 1 || menu > 6)
 			{
 				endwin();
 				continue;
@@ -260,9 +327,15 @@ int game_start(void)
 
 		while(1)
 		{
-			if(game == GAME_END)
+			if(game == win1P)
 			{
-				game_end();
+				game_end(win1P);
+				endwin();
+				return 1;
+			}
+			else if(game == win2P)
+			{
+				game_end(win2P);
 				endwin();
 				return 1;
 			}
@@ -282,7 +355,7 @@ int set_ticker(int game_state)
 		new_timeset.it_value.tv_sec     = 0  ;      
 		new_timeset.it_value.tv_usec    = 1 ;    
 	}
-	else if(game_state==GAME_END){
+	else if(game_state== win1P || game_state == win2P){
 		new_timeset.it_interval.tv_sec  = 0;        
 		new_timeset.it_interval.tv_usec = 0;      
 		new_timeset.it_value.tv_sec     = 0  ;      
@@ -297,6 +370,7 @@ int display_tetris_table()
 {
 	int i, j;
 	char (*block_pointer)[4][4][4] = NULL;
+	char (*block_pointer2)[4][4][4] = NULL;
 
 	switch(next_block_number)
 	{
@@ -308,14 +382,25 @@ int display_tetris_table()
 		case J_BLOCK : 	block_pointer = &j_block; break;
 		case O_BLOCK :	block_pointer = &o_block; break;
 	}
-
+	if(pvp)
+	switch(next_block_number2)
+	{
+		case I_BLOCK :	block_pointer2 = &i_block; break;
+		case T_BLOCK :	block_pointer2 = &t_block; break;
+		case S_BLOCK :  block_pointer2 = &s_block; break;
+		case Z_BLOCK : 	block_pointer2 = &z_block; break;
+		case L_BLOCK : 	block_pointer2 = &l_block; break;
+		case J_BLOCK : 	block_pointer2 = &j_block; break;
+		case O_BLOCK :	block_pointer2 = &o_block; break;
+	}
 
 	clear();
-
-	move(7,2);
+	int yy;
+	yy = 7;
 	for(i = 2 ; i < 21 ; i++)
 	{
-		printw("\t");
+		move(yy,8);
+		
 		for(j = 0 ; j < 10 ; j++)
 		{
 			if(j == 0 || j == 9|| (i == 20 && (j > 1 || j < 8)))
@@ -329,41 +414,139 @@ int display_tetris_table()
 			else if(tetris_table[i][j] == 0)
 				printw("  ");
 		}
-		addstr("\n");
+		yy++;
 	}
+	
 	move(0,0);
 	tetris();
 	
 	move(6,2);
-	printw("     SCORE: %ld TOP SCORE: %d",point, best_point); //현재스코어와 최고점수를 출력 
-	
+	printw("     SCORE: %ld TOP SCORE: %d",point, best_point); //현재스코어 출력 1p
 	move(7,8);
 
 	for(int z=0; z<10; z++) //테트리스판뚜껑 
 	printw("□ ");
 	
+	
 	/*다음나올 블럭 출력 부분 */
+	attron(A_BOLD);
+	attron(COLOR_PAIR(2));
 	move(26,2);
-	printw(" \n\t     Next Block\n\n\t");
-	printw("□ □ □ □ □ □ □ □ □ □  \n\n");
-
+	printw(" \t□    \t 1P  \t  □");
+	move(27,2);
+	printw("\t□ □ □ □ □ □ □ □ □ □ ");
+        move(28,2);
+	addstr("\t□    NEXT BLOCK   □ ");
+   	attroff(COLOR_PAIR(1));
+	
+	move(29,2);
+	printw("\t□ □ □ □ □ □ □ □ □ □ ");
+	yy = 32;
 	for(i = 0 ; i < 4 ; i++)
 	{
-		addstr("\n\t       ");
+		for(int p=30; p<37; p++){ 
+			move(p,8);
+			printw("□ ");
+			move(p,26);
+			printw("□ ");
+		}
+		move(yy,14);
+		//printw("\t       ");
 		for(j = 0 ; j < 4 ; j++)
 		{
 			
 			if((*block_pointer)[0][i][j] == 1)
 				printw("■ ");
 			else if((*block_pointer)[0][i][j] == 0)
-				printw("");
+				printw("  ");
 			
 		}
+		yy++;
 	}	
-	printw("\n\t□ □ □ □ □ □ □ □ □ □  \n");
-	printw("      System_programming_Group9\n\n");	
-	refresh();	
+	move(37,2);
+	printw("\t□ □ □ □ □ □ □ □ □ □ ");	
+	if(pvp==1)
+	{
+		move(0,0);
+		tetris2p();
+		yy = 7;
+		move(yy,32);
+		for(i = 2 ; i < 21 ; i++)
+		{
+		move(yy,32);
+			printw("\t");
+				for(j = 0 ; j < 10 ; j++)
+			{
+				if(j == 0 || j == 9|| (i == 20 && (j > 1 || j < 8)))
+				{
+					printw("□ ");
+				
+				}
+				
+				else if(tetris_table2[i][j] == 1)
+					printw("■ ");
+				else if(tetris_table2[i][j] == 0)
+					printw("  ");
+			}
+			yy++;
+		}
+		move(6,34);
+		printw("     SCORE: %ld TOP SCORE: %d",point2, best_point); //2p스코어 출력 
+		move(7,40);
+		for(int z=0; z<10; z++) //테트리스판뚜껑 
+		printw("□ ");
+		yy = 32;
+		for(i = 0 ; i < 4 ; i++)
+		{
+			for(int p=30; p<37; p++){ 
+			move(p,40);
+			printw("□ ");
+			move(p,58);
+			printw("□ ");
+		}
+			move(yy,46);
+	
+			
+			for(j = 0 ; j < 4 ; j++)
+			{
+				
+				if((*block_pointer2)[0][i][j] == 1)
+					printw("■ ");
+				else if((*block_pointer2)[0][i][j] == 0)
+					printw("  ");
+				
+			}
+			yy++;
+		}	
 
+		attron(A_BOLD);
+		attron(COLOR_PAIR(2));
+		move(26,32);
+		printw(" \t□    \t 2P  \t  □");
+		move(27,32);
+		printw("\t□ □ □ □ □ □ □ □ □ □ ");
+       		 move(28,32);
+		addstr("\t□    NEXT BLOCK   □ ");
+   		attroff(COLOR_PAIR(1));
+		move(29,32);
+		printw("\t□ □ □ □ □ □ □ □ □ □ ");
+		move(37,32);
+		printw("\t□ □ □ □ □ □ □ □ □ □ ");
+		
+	}
+	if(pvp==0)
+	{
+		move(39,2);
+		
+		move(45,99);
+	}
+	else
+	{
+		
+		move(45,99);
+	}
+	refresh();
+	move(45,99);
 	return 0;
 }
 
@@ -377,17 +560,27 @@ void tetris(void) //TETRIS 그림
 	printw("  ■     ■ ■ ■     ■     ■   ■   ■   ■ ■■\n");
 
 }
+void tetris2p(void) //TETRIS 그림 
+{
+	
+	printw("             ■ ■ ■   ■ ■ ■   ■ ■ ■   ■ ■ ■   ■   ■■ ■\n");
+	printw("               ■     ■         ■     ■   ■   ■   ■  \n");
+	printw("               ■     ■ ■ ■     ■     ■ ■     ■    ■■ \n");
+	printw("               ■     ■         ■     ■  ■    ■      ■\n");
+	printw("               ■     ■ ■ ■     ■     ■   ■   ■   ■ ■■\n");
+
+}
 void tetris2(void) //칸에 맞춰 출력하기 위한 메인화면 TETRIS 그림 
 {
-	move(4,13);
+	move(4,14);
 	printw("■ ■ ■   ■ ■ ■   ■ ■ ■   ■ ■ ■   ■   ■■ ■");
-	move(5,13);
+	move(5,14);
 	printw("  ■     ■         ■     ■   ■   ■   ■  \n");
-	move(6,13);	
+	move(6,14);	
 	printw("  ■     ■ ■ ■     ■     ■ ■     ■    ■■ \n");
-	move(7,13);	
+	move(7,14);	
 	printw("  ■     ■         ■     ■  ■    ■      ■\n");
-	move(8,13);	
+	move(8,14);	
 	printw("  ■     ■ ■ ■     ■     ■   ■   ■   ■ ■■\n");
 
 }
@@ -409,10 +602,23 @@ int init_tetris_table(void)
 	for(j = 1 ; j < 9 ; j++)
 		tetris_table[20][j]= 1;
 
+	for(i = 0 ; i < 20 ; i++)
+		for(j = 1 ; j < 9 ; j++)
+			tetris_table2[i][j] = 0;
+
+	for(i = 0 ; i < 21 ; i++)
+	{
+		tetris_table2[i][0] = 1;
+		tetris_table2[i][9] = 1;
+	}
+
+	for(j = 1 ; j < 9 ; j++)
+		tetris_table2[20][j]= 1;
+
 	return 0;
 }
 
-void game_end(){
+void game_end(int aword){
 	time_t ptime;
 	struct tm *t;
 	FILE *fp = NULL;
@@ -422,71 +628,109 @@ void game_end(){
 
 	// 기록 저장 및 게임오버화면 출력 
 	
-	move(15,2);
-	addch(ACS_ULCORNER);
-	for(int i=0; i<10; i++)
-		addch(ACS_HLINE);
-	printw("GAME OVER");  
-	for(int i=0; i<11; i++)
-		addch(ACS_HLINE);
-	addch(ACS_URCORNER);
-	
-	printw("\n\n           Final Score : %ld    ", point);
-	printw("\n\n          INPUT INITIAL : ");
-	
- 	 for(int d=0; d<6; d++){
-		move(d+16,2);
-		addch(ACS_VLINE);
-		move(d+16,33);
-		addch(ACS_VLINE);
-	}
-	move(21,2);
-	addch(ACS_LLCORNER);
-	for(int i=0; i<30; i++)
-		addch(ACS_HLINE);
-	addch(ACS_LRCORNER);
-	move(19,26);
-	printw("     ");
-	move(20,3);
-	printw("                          ");
-	move(19,26);
-	
-	
-	refresh();
-	
-		scanw("%s%*c", temp_result.name);
-	if(strlen(temp_result.name)!=3){	//이니셜 세글자가 아닌경우에 사용자로부터 한번만 다시 입력받음 	
-		move(18,7);
-		printw("세글자만 입력하세요");
+	if(pvp==0)
+	{
+		move(15,2);
+		addch(ACS_ULCORNER);
+		for(int i=0; i<10; i++)
+			addch(ACS_HLINE);
+		printw("GAME OVER");  
+		for(int i=0; i<11; i++)
+			addch(ACS_HLINE);
+		addch(ACS_URCORNER);
+		
+		printw("\n\n           Final Score : %ld    ", point);
+		printw("\n\n          INPUT INITIAL : ");
+		
+	 	 for(int d=0; d<6; d++){
+			move(d+16,2);
+			addch(ACS_VLINE);
+			move(d+16,33);
+			addch(ACS_VLINE);
+		}
+		move(21,2);
+		addch(ACS_LLCORNER);
+		for(int i=0; i<30; i++)
+			addch(ACS_HLINE);
+		addch(ACS_LRCORNER);
 		move(19,26);
-		scanw("%s%*c", temp_result.name);		
+		printw("     ");
+		move(20,3);
+		printw("                          ");
+		move(19,26);
+		
+		
+		refresh();
+		
+			scanw("%s%*c", temp_result.name);
+		if(strlen(temp_result.name)!=3){	//이니셜 세글자가 아닌경우에 사용자로부터 한번만 다시 입력받음 	
+			move(18,7);
+			printw("세글자만 입력하세요");
+			move(19,26);
+			scanw("%s%*c", temp_result.name);		
+		}
+		if (!strcmp(temp_result.name, ""))
+			strcpy(temp_result.name, "NULL");
+		temp_result.point = point;
+		//endwin();	
+	
+		if(temp_result.point >= best_point)
+			best_point = temp_result.point;
+	
+	
+		ptime = time(NULL); // 현재 시각을 초 단위로 얻기
+		t = localtime(&ptime); // 초 단위의 시간을 분리하여 구조체에 넣기
+	
+		temp_result.year = t->tm_year + 1900;
+		temp_result.month = t->tm_mon + 1;
+		temp_result.day = t->tm_mday;
+		temp_result.hour = t->tm_hour;
+		temp_result.min = t->tm_min;
+	
+		fp = fopen("result.txt", "a");
+		fseek(fp, 1, SEEK_END);
+		//fwrite(&temp_result, sizeof(struct result), 1, fp);
+		fprintf(fp, "%s %ld %d %d %d %d %d\n", temp_result.name, temp_result.point, temp_result.year, temp_result.month, temp_result.day, temp_result.hour, temp_result.min);
+		fclose(fp);
+	
+		x = 3, y =0;
+		point = 0;
+		x2 = 3, y2 =0;
+		point2 = 0;
 	}
-	if (!strcmp(temp_result.name, ""))
-		strcpy(temp_result.name, "NULL");
-	temp_result.point = point;
-	//endwin();	
-
-	if(temp_result.point >= best_point)
-		best_point = temp_result.point;
-
-
-	ptime = time(NULL); // 현재 시각을 초 단위로 얻기
-	t = localtime(&ptime); // 초 단위의 시간을 분리하여 구조체에 넣기
-
-	temp_result.year = t->tm_year + 1900;
-	temp_result.month = t->tm_mon + 1;
-	temp_result.day = t->tm_mday;
-	temp_result.hour = t->tm_hour;
-	temp_result.min = t->tm_min;
-
-	fp = fopen("result.txt", "a");
-	fseek(fp, 1, SEEK_END);
-	//fwrite(&temp_result, sizeof(struct result), 1, fp);
-	fprintf(fp, "%s %ld %d %d %d %d %d\n", temp_result.name, temp_result.point, temp_result.year, temp_result.month, temp_result.day, temp_result.hour, temp_result.min);
-	fclose(fp);
-
-	x = 3, y =0;
-	point = 0;
+	else
+	{
+		move(15,2);
+		addch(ACS_ULCORNER);
+		for(int i=0; i<30; i++)
+			addch(ACS_HLINE);
+		printw("GAME OVER");  
+		for(int i=0; i<30; i++)
+			addch(ACS_HLINE);
+		addch(ACS_URCORNER);
+		printw("\n\n\t\t\t\t%ldP WIN!", aword);
+		printw("\n                                                               ");
+		printw("\n\t\t\t    CONGRATURATION");
+		printw("\n                                                               ");
+	 	 for(int d=0; d<6; d++){
+			move(d+16,2);
+			addch(ACS_VLINE);
+			move(d+16,72);
+			addch(ACS_VLINE);
+		}
+		move(21,2);
+		addch(ACS_LLCORNER);
+		for(int i=0; i<69; i++)
+			addch(ACS_HLINE);
+		addch(ACS_LRCORNER);
+		move(99,99);
+		refresh();
+		x = 3, y =0;
+		point = 0;
+		x2 = 3, y2 =0;
+		point2 = 0;
+		sleep(5);
+	}
 }
 
 
@@ -534,6 +778,12 @@ int _refresh(int signum)
 	static long speedcount = 0;
 	static int countrange = 5;
 	static int firststart = 0;
+	static int downcount2 = 0;
+	static int setcount2 = 0;
+	static long speedcount2 = 0;
+	static int countrange2 = 5;
+	static int firststart2 = 0;
+	
 	
 
 	char ch;
@@ -547,7 +797,6 @@ int _refresh(int signum)
 			firststart++;
 	}
 	
-	
 	display_tetris_table();
 	check_one_line();
 
@@ -557,13 +806,11 @@ int _refresh(int signum)
 		point += 1;
 		move_block(DOWN);
 	}
-
 	if(speedcount == 499)
 	{
 		if(countrange != 1)
 			countrange--;
 	}
-
 	downcount++;
 	downcount %= countrange;
 	speedcount++;
@@ -579,7 +826,7 @@ int _refresh(int signum)
 			speedcount = 0;
 			countrange = 5;
 			firststart = 0;
-			game = GAME_END;
+			game = win2P;
 		}
 	}
 
@@ -596,7 +843,59 @@ int _refresh(int signum)
 		setcount++;
 		setcount %= 10;
 	}
-
+	if(pvp==1)
+	{
+		if(firststart2 == 0)
+		{
+			block_number2= rand()%7;
+			if(firststart2 == 0)
+				firststart2++;
+		}
+		check_one_line2();
+		if(downcount2 == countrange2-1)
+		{
+			point2 += 1;
+			move_block2(DOWN);
+		}
+		if(speedcount2 == 499)
+		{
+			if(countrange2 != 1)
+				countrange2--;
+		}
+	
+		downcount2++;
+		downcount2 %= countrange2;
+		speedcount2++;
+		speedcount2 %= 500;
+	
+	
+		if(x2 == 3 && y2 == 0)
+		{
+			if(collision_test2(LEFT) || collision_test2(RIGHT) || collision_test2(DOWN) || collision_test2(ROTATE))
+			{
+				printw("\n Game End! \n");
+				downcount2 = 0;
+				setcount2 = 0;
+				speedcount2 = 0;
+				countrange2 = 5;
+				firststart2 = 0;
+				game = win1P;
+			}
+		}
+		if(collision_test2(DOWN))
+		{
+		if(setcount2 == 9)
+		{
+			block_number2= next_block_number2;
+			next_block_number2 = rand()%7;
+			block_state2 = 0;
+			x2 = 3;
+			y2 = 0;
+		}
+		setcount2++;
+		setcount2 %= 10;
+		}
+	}
 	ch = _getch();
 
 	switch(ch)
@@ -609,21 +908,28 @@ int _refresh(int signum)
 								break;
 		case 119 :	move_block(ROTATE);
 								break;
-		case 106 :	move_block(LEFT);
+		case 106 :	move_block2(LEFT);
 					  		break;
-		case 108 :	move_block(RIGHT);
+		case 108 :	move_block2(RIGHT);
 						  	break;
-		case 107 :	move_block(DOWN);
+		case 107 :	move_block2(DOWN);
 								break;
-		case 105 :	move_block(ROTATE);
+		case 105 :	move_block2(ROTATE);
 								break;
 		case 113  :	drop();
+								break;
+		case 117  :	drop2();
 								break;
  		case 27 :	downcount = 0;
  								setcount = 0;
  								speedcount = 0;
  								countrange = 5;
  								firststart = 0;
+				downcount2 = 0;
+ 								setcount2 = 0;
+ 								speedcount2 = 0;
+ 								countrange2 = 5;
+ 								firststart2 = 0;
  								game = GAME_END;
  								break;
  		default : 	break;
@@ -710,6 +1016,83 @@ int move_block(int command)
 
 	return 0;
 }
+int move_block2(int command)
+{
+	int i, j;
+	int newx, newy;
+	int oldx, oldy;
+	int old_block_state;
+	char (*block_pointer2)[4][4][4] = NULL;
+
+	newx = x2;
+	newy = y2;
+
+	old_block_state = block_state2;
+
+	if(collision_test2(command) == 0)
+	{
+		switch(command)
+		{
+			case	LEFT :	newx--;
+										break;
+			case	RIGHT :	newx++;
+										break;
+			case	DOWN :	newy++;
+										break;
+			case ROTATE :	block_state2++;
+										block_state2 %= 4;
+										break;
+		}
+	}
+	else
+	{
+		return 1;
+	}
+
+	switch(block_number2)
+	{
+		case I_BLOCK :	block_pointer2 = &i_block;
+								  	break;
+		case T_BLOCK :	block_pointer2 = &t_block;
+										break;
+		case S_BLOCK :  block_pointer2 = &s_block;
+										break;
+		case Z_BLOCK : 	block_pointer2 = &z_block;
+										break;
+		case L_BLOCK : 	block_pointer2 = &l_block;
+										break;
+		case J_BLOCK : 	block_pointer2 = &j_block;
+										break;
+		case O_BLOCK :	block_pointer2 = &o_block;
+										break;
+	}
+
+	for(i = 0, oldy = y2 ; i < 4 ; i++, oldy++)
+	{
+		for(j = 0, oldx = x2 ; j < 4 ; j++, oldx++)
+		{
+			if(oldx > 0 && oldx < 9 && oldy < 20 && oldy > 0)
+				if((*block_pointer2)[old_block_state][i][j] == 1)
+						tetris_table2[oldy][oldx] = 0;
+
+		}
+	}
+
+	x2 = newx;
+	y2 = newy;
+
+	for(i = 0, newy = y2 ; i < 4 ; i++, newy++)
+	{
+		for(j = 0, newx = x2 ; j < 4 ; j++, newx++)
+		{
+			if(newx > 0 && newx < 9 && newy < 20 && newy > 0)
+				if((*block_pointer2)[block_state2][i][j] == 1)
+					tetris_table2[newy][newx] = (*block_pointer2)[block_state2][i][j];
+		}
+	}
+
+	return 0;
+}
 
 /* 블록이 이동, 회전하기 전에 충돌되는 블록이나 벽이 없는지 확인하는 함수*/
 int collision_test(int command)
@@ -788,12 +1171,94 @@ int collision_test(int command)
 
 	return 0;
 }
+int collision_test2(int command)
+{
+	int i, j;
+	int tempx, tempy;
+	int oldx, oldy;
+	int temp_block_state;
+	char (*block_pointer)[4][4][4];
+	char temp_tetris_table[21][10];
 
+	oldx = tempx = x2;
+	oldy = tempy = y2;
+	temp_block_state = block_state2;
+
+	switch(command)
+	{
+		case	LEFT :	tempx--;
+									break;
+		case	RIGHT :	tempx++;
+									break;
+		case	DOWN :	tempy++;
+									break;
+		case ROTATE : temp_block_state++;
+									temp_block_state %=  4;
+									break;
+	}
+
+	switch(block_number2)
+	{
+		case I_BLOCK :	block_pointer = &i_block;
+								  	break;
+		case T_BLOCK :	block_pointer = &t_block;
+										break;
+		case S_BLOCK :  block_pointer = &s_block;
+										break;
+		case Z_BLOCK : 	block_pointer = &z_block;
+										break;
+		case L_BLOCK : 	block_pointer = &l_block;
+										break;
+		case J_BLOCK : 	block_pointer = &j_block;
+										break;
+		case O_BLOCK :	block_pointer = &o_block;
+										break;
+	}
+
+	for(i = 0 ; i < 21 ; i++)
+	{
+		for(j = 0 ; j < 10 ; j++)
+		{
+			temp_tetris_table[i][j] = tetris_table2[i][j];
+		}
+	}
+
+	for(i = 0, oldy = y2 ; i < 4 ; i++, oldy++)
+	{
+		for(j = 0, oldx = x2 ; j < 4 ; j++, oldx++)
+		{
+			if(oldx > 0 && oldx < 9 && oldy < 20 && oldy > 0)
+			{
+				if((*block_pointer)[block_state2][i][j] == 1)
+						temp_tetris_table[oldy][oldx] = 0;
+			}
+		}
+	}
+
+	for(i = 0 ; i < 4 ; i++)
+	{
+		for(j = 0 ; j < 4 ; j++)
+		{
+
+			if(temp_tetris_table[tempy+i][tempx+j] == 1 && (*block_pointer)[temp_block_state][i][j] == 1)
+					return 1;
+		}
+	}
+
+	return 0;
+}
 /* 충돌되기 전까지 블록을 다운시킨다.*/
 int drop(void)
 {
 	while(!collision_test(DOWN))
 		move_block(DOWN);
+
+	return 0;
+}
+int drop2(void)
+{
+	while(!collision_test2(DOWN))
+		move_block2(DOWN);
 
 	return 0;
 }
@@ -824,6 +1289,38 @@ int check_one_line(void)
 				for(tj = 0 ; tj < 9 ; tj++)
 				{
 					tetris_table[ti][tj] = tetris_table[ti-1][tj];
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+int check_one_line2(void)
+{
+	int i, j;
+	int ti, tj;
+	int line_hole;
+
+	for(i = 19 ; i > 0 ; i--)
+	{
+		line_hole = 0;
+		for(j = 1 ; j < 9 ; j++)
+		{
+			if(tetris_table2[i][j] == 0)
+			{
+				line_hole = 1;
+			}
+		}
+
+		if(line_hole == 0)
+		{
+			point2 += 1000;
+			for(ti = i ; ti > 0 ; ti--)
+			{
+				for(tj = 0 ; tj < 9 ; tj++)
+				{
+					tetris_table2[ti][tj] = tetris_table2[ti-1][tj];
 				}
 			}
 		}
@@ -896,7 +1393,7 @@ int search_result(void)
 	printw("\n\n\n\t\t      메뉴 화면으로 돌아가기 : M");
 
 	
-	printw("\n\n\t\t       system_programming_group9");
+	
 	refresh();
 	while(1)
 	{
@@ -965,7 +1462,7 @@ int print_result(void)
 	printw("\n\n\t\t\t   메뉴 화면으로 돌아가기 : M");
 
 	
-	printw("\n\n\t\t\t   system_programming_group9");
+	
 	refresh();
 	while(1)
 	{
