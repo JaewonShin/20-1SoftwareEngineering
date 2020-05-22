@@ -139,3 +139,18 @@ int display_menu(void)
 	}
 	return 0;
 }
+
+void tetris_plate(void) //칸에 맞춰 출력하기 위한 메인화면 TETRIS 그림 
+{
+	move(4,14);
+	printw("■ ■ ■   ■ ■ ■   ■ ■ ■   ■ ■ ■   ■   ■■ ■");
+	move(5,14);
+	printw("  ■     ■         ■     ■   ■   ■   ■  \n");
+	move(6,14);	
+	printw("  ■     ■ ■ ■     ■     ■ ■     ■    ■■ \n");
+	move(7,14);	
+	printw("  ■     ■         ■     ■  ■    ■      ■\n");
+	move(8,14);	
+	printw("  ■     ■ ■ ■     ■     ■   ■   ■   ■ ■■\n");
+
+}
