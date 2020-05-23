@@ -11,7 +11,7 @@
 #include<locale.h>
 #include<ncursesw/curses.h>
 #include "GameStart2P.h"
-#include "GameStart1.h"
+#include "GameStart1P.h"
 
 
 
