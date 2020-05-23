@@ -200,13 +200,17 @@ int main(void)
 			game = GAME_START;
 			menu = game_start_2p();
 		}
+		else if(menu ==3)
+		{
+			//네트워크 
+		}
 		else if(menu == 4)
 		{
-			search_result();
+			//검색 
 		}
 		else if(menu == 5)
-		{
-			print_result();
+		{ //랭킹
+
 		}
 		else if(menu == 6)
 		{
