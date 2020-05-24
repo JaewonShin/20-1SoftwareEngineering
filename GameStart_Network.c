@@ -16,7 +16,7 @@
 #include <pthread.h>
 #define PORT 12345
 
-#include "Tetris_net.h"
+#include "GameStart_Network.h"
 #include "GameStart1P.h"
 #include "GameStart2P.h"
 
