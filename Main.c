@@ -16,6 +16,8 @@
 
 
 #include "GameStart_Network.h"
+#include "Server.h"
+#include "Client.h"
 
 int game = GAME_END; /*게임 상태 변수, 게임이 시작되거나 종료됨에 따라 변한다*/
 char i_block[4][4][4] =
