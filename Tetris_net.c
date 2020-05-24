@@ -47,6 +47,7 @@
 #define L_BLOCK 4
 #define J_BLOCK 5
 #define O_BLOCK 6
+#define TEST 88
 
 /* 게임 시작, 종료 설정*/
 #define GAME_START 0
