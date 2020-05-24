@@ -151,7 +151,7 @@ int print_result(void)
 	printw("\n\n\t\t\t   메뉴 화면으로 돌아가기 : M");
 
 
-	printw("\n\n\t\t\t   system_programming_group9");
+	printw("\n\n\t\t\t   Software Engineering");
 	refresh();
 	while(1)
 	{
