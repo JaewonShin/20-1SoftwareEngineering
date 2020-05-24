@@ -15,6 +15,7 @@
 #include "Result.h"
 
 
+#include "Tetris_net.h"
 
 int game = GAME_END; /*게임 상태 변수, 게임이 시작되거나 종료됨에 따라 변한다*/
 char i_block[4][4][4] =
@@ -201,9 +202,47 @@ int main(void)
 			game = GAME_START;
 			menu = game_start_2p();
 		}
-		else if(menu ==3)
-		{
-			//네트워크 
+		else if(menu ==3) {	
+			int host, enter;		
+			initscr();
+			clear();
+ 			game = GAME_START;
+			move(11,23);	
+			printw("방을 호스트 하시려면 '1' 선택");
+			move(13,22);
+			printw("호스트에게 접속하려면 '2' 선택");
+			move(21,30);
+			addch(ACS_ULCORNER);
+			for(int i=0; i<10; i++)
+				addch(ACS_HLINE);
+			addch(ACS_URCORNER);
+			move(22,30);
+			addch(ACS_VLINE);
+			move(22,41);
+			addch(ACS_VLINE);
+			move(23,30);
+			addch(ACS_LLCORNER);
+			for(int i=0; i<10; i++)
+				addch(ACS_HLINE);
+			addch(ACS_LRCORNER);
+			move(22,31);	
+			printw(" 선택 : ");
+			scanw("%d",&host);
+			if(host ==1){
+				clear();
+				move(11,23);	
+				printw("방이 생성되었습니다. \n         아무 버튼을 누르면");
+				printw("상대방의 입장을 허용합니다. ");
+				curs_set(0);
+				move(31,23);
+				scanw("%d",&enter); //입력으로 대기걸어놓기 
+				curs_set(1);
+			}				
+			if(host ==1){
+				server(); //서버측 
+			}
+			if(host ==2)
+				client(); //클라이언트 측  
 		}
 		else if(menu == 4)
 		{
@@ -226,8 +265,7 @@ int main(void)
 }
 
 /* 메뉴를 보여줌 */
-int display_menu(void)
-{
+int display_menu(void) {
 	int menu = 0;
 	curs_set(1);
 	while(1)
@@ -303,8 +341,7 @@ int display_menu(void)
 		
 		move(24,31);	
 		printw(" 선택 : ");
-	
-	
+
 	
 
 		scanw("%d",&menu);
