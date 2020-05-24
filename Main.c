@@ -15,7 +15,7 @@
 #include "Result.h"
 
 
-#include "Tetris_net.h"
+#include "GameStart_Network.h"
 
 int game = GAME_END; /*게임 상태 변수, 게임이 시작되거나 종료됨에 따라 변한다*/
 char i_block[4][4][4] =
@@ -206,6 +206,7 @@ int main(void)
 			int host, enter;		
 			initscr();
 			clear();
+			int host, enter;
  			game = GAME_START;
 			move(11,23);	
 			printw("방을 호스트 하시려면 '1' 선택");
