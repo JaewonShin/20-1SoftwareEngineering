@@ -12,6 +12,7 @@
 #include<ncursesw/curses.h>
 #include "GameStart2P.h"
 #include "GameStart1P.h"
+#include "Result.h"
 
 
 
@@ -206,10 +207,11 @@ int main(void)
 		}
 		else if(menu == 4)
 		{
-			//검색 
+			search_result();
 		}
 		else if(menu == 5)
-		{ //랭킹
+		{ 
+			print_result();
 
 		}
 		else if(menu == 6)
