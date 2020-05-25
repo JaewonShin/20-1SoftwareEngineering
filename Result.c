@@ -17,6 +17,18 @@
 
 #include "Result.h"
 
+//스코어 내용 구조체 새로 생성
+typedef struct tetris_score
+{
+	char name[30];
+    long point;
+    int year;
+    int month;
+    int day;
+    int hour;
+    int min;
+} score;
+
 /* 기록을 검색하는 함수*/
 int search_result(void)
 {
@@ -24,6 +36,7 @@ int search_result(void)
 	char name[30];
 	char ch = 1;
 	int find = 0;
+
 	setlocale(LC_CTYPE, "ko_KR.utf-8");
 
 	fp = fopen("result.txt", "r");
@@ -49,7 +62,6 @@ int search_result(void)
 	printw("\t이름\t     점수\t   날짜\t\t 시간");
 	printw("      ");
 	addch(ACS_VLINE);
-
 
 	while(!feof(fp))
 	{
@@ -100,12 +112,50 @@ int print_result(void)
 {
 	FILE *fp = NULL;
 	char ch = 1 ;
+	int cnt = 0;
+	int i = 0, j;
+
 	setlocale(LC_CTYPE, "ko_KR.utf-8");
 
 	fp = fopen("result.txt", "r");
 
 	if(fp == NULL)
 		return 0;
+
+    /////////////////////저장된 점수 동적할당 포인터 배열에 기록///////////////////
+
+	cnt = file_count(fp);
+
+	score *score_p;
+	score_p = (score*)malloc(sizeof(score)*cnt);
+
+	for(i=0; i<cnt; i++){
+		fscanf(fp, "%s %ld %d %d %d %d %d\n", score_p[i].name, &score_p[i].point, &score_p[i].year, &score_p[i].month, &score_p[i].day, &score_p[i].hour, &score_p[i].min);
+	}
+
+
+	printf("\n\n%d", cnt);
+
+	///////////////////배열 내림차순 정렬//////////////////
+
+	score temp;
+    for(i=0; i<cnt+1; i++)
+    {
+        for(j=0; j<cnt; j++)
+        {
+            if(score_p[j].point < score_p[j+1].point)
+            {
+                temp = score_p[j];
+                score_p[j] = score_p[j+1];
+                score_p[j+1] = temp;
+            }
+        }
+    }
+
+	/////////////////////////////////////////////////////////
+
+
+
 
 	initscr();
 	clear();
@@ -126,9 +176,15 @@ int print_result(void)
 	printw("   \t  ");
 	addch(ACS_VLINE);
 
-	while(!feof(fp))
+
+
+	int k = 0;
+	
+
+//	while(!feof(fp))
+	while(k < cnt)
 	{
-			fscanf(fp, "%s %ld %d %d %d %d %d\n", temp_result.name, &temp_result.point, &temp_result.year, &temp_result.month, &temp_result.day, &temp_result.hour, &temp_result.min);
+			//fscanf(fp, "%s %ld %d %d %d %d %d\n", temp_result.name, &temp_result.point, &temp_result.year, &temp_result.month, &temp_result.day, &temp_result.hour, &temp_result.min);
 			printw("\n       ");
 			addch(ACS_LTEE);
 			for(int i=0; i<66; i++)
@@ -136,8 +192,13 @@ int print_result(void)
 			addch(ACS_RTEE);
 			printw("\n       ");
 			addch(ACS_VLINE);
-			printw("  \t %s\t\t %ld\t%d. %d. %d       %d : %d \t  ", temp_result.name, temp_result.point, temp_result.year, temp_result.month, temp_result.day, temp_result.hour, temp_result.min);
+			//printw("  \t %s\t\t %ld\t%d. %d. %d       %d : %d \t  ", temp_result.name, temp_result.point, temp_result.year, temp_result.month, temp_result.day, temp_result.hour, temp_result.min);
+
+			printw("  \t %s\t\t %ld\t%d. %d. %d       %d : %d \t  ", score_p[k].name, score_p[k].point, score_p[k].year, score_p[k].month, score_p[k].day, score_p[k].hour, score_p[k].min);
 			addch(ACS_VLINE);
+
+			k++;
+
 	}
 
 	fclose(fp);
@@ -163,3 +224,26 @@ int print_result(void)
 	return 1;
 
 }
+
+int file_count(FILE *file)
+{
+    char str[30];
+	int cnt = 0;
+
+    while(1)
+    {
+        fgets(str, 30, file);
+        if(feof(file)) break;
+        //record = (result*)malloc(sizeof(result) * 1);
+        printf("asdasdasd\n");
+        cnt ++;
+    }
+
+    //fseek(fp,0,SEEK_SET);
+    rewind(file);
+
+	return cnt;
+
+}
+
+
