@@ -17,7 +17,6 @@
 
 #include "GameStart_Network.h"
 #include "Server.h"
-#include "Client.h"
 
 int game = GAME_END; /*게임 상태 변수, 게임이 시작되거나 종료됨에 따라 변한다*/
 char i_block[4][4][4] =
@@ -205,7 +204,6 @@ int main(void)
 			menu = game_start_2p();
 		}
 		else if(menu ==3) {	
-			int host, enter;		
 			initscr();
 			clear();
 			int host, enter;
@@ -244,8 +242,10 @@ int main(void)
 			if(host ==1){
 				server(); //서버측 
 			}
+			/*
 			if(host ==2)
 				client(); //클라이언트 측  
+				*/
 		}
 		else if(menu == 4)
 		{
