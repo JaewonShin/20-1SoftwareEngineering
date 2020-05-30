@@ -54,18 +54,38 @@ int search_result(void)
 	printw("\n\n\t\t기록을 찾고싶은 이니셜을 입력하세요  : ");
 	scanw("%s%*c", name);
 	move(10,0);
-	printw("\n\t\t\t\tTetris");
-	printw("\n\n\t\t\t      게임  기록\n\n");
+	//printw("\n\t\t\t\tTetris");
+
+	clear();
+
+	move(2,36);
+	printw("Tetris");
+	move(3,35);
+	printw("게임 기록");
 	printw("\n       ");
+
+	//printw("\n\n\t\t\t      게임  기록\n\n");
+	//printw("\n       ");
 	addch(ACS_ULCORNER);
-		for(int i=0; i<59; i++)
+		for(int i=0; i<66; i++)
 			addch(ACS_HLINE);
 	addch(ACS_URCORNER);
+
+
+	move(5, 5);
+	printw("  ");
+	addch(ACS_VLINE);
+	printw("\t 이름\t\t점수\t    날짜\t 플레이시간");
+	printw("   \t  ");
+	addch(ACS_VLINE);
+
+	/*
 	printw("\n       ");
 	addch(ACS_VLINE);
 	printw("\t이름\t     점수\t   날짜\t\t 시간");
 	printw("      ");
 	addch(ACS_VLINE);
+	*/
 
 	while(!feof(fp))
 	{
@@ -91,17 +111,17 @@ int search_result(void)
 	}
 	printw("\n       ");
 	addch(ACS_LLCORNER);
-		for(int i=0; i<59; i++)
+		//for(int i=0; i<59; i++)
+
+		for(int i=0; i<66; i++)
 			addch(ACS_HLINE);
 	addch(ACS_LRCORNER);
 
 	if(find == 0)
-		printw("\n\n\n\t\t        검색된 이름이 없습니다.");
-
-	printw("\n\n\n\t\t      메뉴 화면으로 돌아가기 : M");
-
-
-	printw("\n\n\t\t       Software Engeenering");
+		printw("\n\n\t\t\t        검색된 이름이 없습니다.");
+		
+	printw("\n\n\t\t\t   메뉴 화면으로 돌아가기 : M");
+	printw("\n\n\t\t\t     Software Engineering");
 	refresh();
 	while(1)
 	{
@@ -142,7 +162,7 @@ int print_result(void)
 	}
 
 
-	printf("\n\n%d", cnt);
+	//printf("\n\n%d", cnt);
 
 	///////////////////배열 내림차순 정렬//////////////////
 
@@ -220,7 +240,7 @@ int print_result(void)
 	printw("\n\n\t\t\t   메뉴 화면으로 돌아가기 : M");
 
 
-	printw("\n\n\t\t\t   Software Engineering");
+	printw("\n\n\t\t\t     Software Engineering");
 	refresh();
 	while(1)
 	{
