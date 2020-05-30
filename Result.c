@@ -17,6 +17,8 @@
 
 #include "Result.h"
 
+
+/*
 //스코어 내용 구조체 새로 생성
 typedef struct tetris_score
 {
@@ -28,6 +30,8 @@ typedef struct tetris_score
     int hour;
     int min;
 } score;
+*/
+
 
 /* 기록을 검색하는 함수*/
 int search_result(void)
@@ -72,12 +76,16 @@ int search_result(void)
 			find = 1;
 			printw("\n       ");
 			addch(ACS_LTEE);
-			for(int i=0; i<59; i++)
-			addch(ACS_HLINE);
+			//for(int i=0; i<59; i++)
+			
+			for(int i=0; i<66; i++)
+				addch(ACS_HLINE);
 			addch(ACS_RTEE);
 			printw("\n       ");
 			addch(ACS_VLINE);
-			printw("\t%s\t       %ld\t%d. %d. %d. | %d : %d    ", temp_result.name, temp_result.point, temp_result.year, temp_result.month, temp_result.day, temp_result.hour, temp_result.min);
+			//test
+			printw("  \t %s\t\t %ld\t%d. %d. %d       %d : %d \t  ", temp_result.name, temp_result.point, temp_result.year, temp_result.month, temp_result.day, temp_result.hour, temp_result.min);
+			//printw("\t%s\t       %ld\t%d. %d. %d. | %d : %d    ", temp_result.name, temp_result.point, temp_result.year, temp_result.month, temp_result.day, temp_result.hour, temp_result.min);
 			addch(ACS_VLINE);
 		}
 	}
@@ -235,7 +243,6 @@ int file_count(FILE *file)
         fgets(str, 30, file);
         if(feof(file)) break;
         //record = (result*)malloc(sizeof(result) * 1);
-        printf("asdasdasd\n");
         cnt ++;
     }
 
