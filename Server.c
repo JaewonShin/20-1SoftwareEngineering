@@ -26,7 +26,9 @@ void server() {
     listen_sock = accept(server_sock, NULL, NULL);
     f = fdopen(listen_sock, "r+");
 
-    // do something with f
+    // how to pass f?
+    host_net = 1;
+    game_start_net();
 
     fclose(f);
     close(listen_sock);
