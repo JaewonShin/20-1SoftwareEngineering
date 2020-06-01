@@ -31,7 +31,7 @@ void client(void)
 
 	// start game as client
 	host_net = 2;
-	game_start_net();
+	menu = game_start_net();
 	
 	// close()
 	close(client_sock);
