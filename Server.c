@@ -28,7 +28,7 @@ void server() {
 
     // how to pass f?
     host_net = 1;
-    game_start_net();
+    menu = game_start_net();
 
     fclose(f);
     close(listen_sock);
