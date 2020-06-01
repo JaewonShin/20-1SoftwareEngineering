@@ -9,6 +9,5 @@ extern struct sockaddr_in client_addr;
 extern char ip[];
 extern int host_net;
 extern int lose_game;
-extern int menu;
 
 void client();

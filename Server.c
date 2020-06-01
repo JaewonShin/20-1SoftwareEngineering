@@ -8,6 +8,7 @@
 #include <ncursesw/curses.h>
 
 #include "Server.h"
+#include "Client.h"
 #include "GameStart_Network.h"
 
 void server() {
@@ -28,7 +29,7 @@ void server() {
     f = fdopen(listen_sock, "r+");
 
     // how to pass f?    
-    menu = game_start_net();
+    game_start_net();
 
     flag = 1;
     send(server_sock, (char*)&flag, sizeof(int), 0); //플래그값 클라이언트에게 쏴줌 

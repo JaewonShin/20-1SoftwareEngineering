@@ -8,6 +8,7 @@
 #include <ncursesw/curses.h>
 
 #include "Client.h"
+#include "Server.h"
 #include "GameStart_Network.h"
 
 void client(void)
@@ -36,7 +37,7 @@ void client(void)
 	}
 
 	// start game as client	
-	menu = game_start_net();
+	game_start_net();
 
 	lose_game == losemsg; //함수 먼저 통과했으니 패배한것  
 	flag = 1; //함수를 통과했으므로 flag 1값으로 변경후 서버에게 쏴줌으로 게임 종료를 알림 .

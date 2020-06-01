@@ -11,7 +11,6 @@ extern struct sockaddr_in listen_addr;
 extern struct sockaddr_in connect_addr;
 extern int lose_game;
 extern int host_net;
-extern int menu;
 
 // missing from spec:
 FILE* f;        // for reading from/writing to socket

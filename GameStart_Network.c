@@ -19,9 +19,7 @@
 #include "GameStart_Network.h"
 #include "GameStart1P.h"
 #include "GameStart2P.h"
-#include "Client.c"
 #include "Client.h"
-#include "Server.c"
 #include "Server.h"
 
 extern char i_block;
@@ -49,7 +47,7 @@ int lo= GAME_END;
 char ip[20];
 int flag = 0;
 int host_net;
-
+int lose_game;
 
 /* 현재의 테트리스판을 보여준다. 블록이 놓이고 쌓인 현재 상태를 보여줌*/
 int display_tetris_table_net(int speed, int host) {
