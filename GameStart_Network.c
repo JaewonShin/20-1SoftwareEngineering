@@ -19,7 +19,10 @@
 #include "GameStart_Network.h"
 #include "GameStart1P.h"
 #include "GameStart2P.h"
-
+#include "Client.c"
+#include "Client.h"
+#include "Server.c"
+#include "Server.h"
 
 extern char i_block;
 extern char t_block;
@@ -40,18 +43,16 @@ long point3 = 0; /* 현재 게임중 득점을 알려주는 변수 */
 char tetris_table3[21][10];
 char tetris_table4[21][10];
 
-int lose_game = GAME_END;
-
-int listen_sock, server_sock, client_sock; //통신관련 변수 선언 
 struct sockaddr_in listen_addr, connect_addr, client_addr;
+int listen_sock, server_sock, client_sock; //통신관련 변수 선언 
+int lo= GAME_END;
 char ip[20];
-int menu = 0;
 int flag = 0;
 int host_net;
 
+
 /* 현재의 테트리스판을 보여준다. 블록이 놓이고 쌓인 현재 상태를 보여줌*/
-int display_tetris_table_net(int speed, int host)
-{
+int display_tetris_table_net(int speed, int host) {
 	int i, j, yy;
 	char (*block_pointer)[4][4][4] = NULL;
 	char (*block_pointer2)[4][4][4] = NULL;
@@ -79,14 +80,11 @@ int display_tetris_table_net(int speed, int host)
 	clear();
 
 	yy = 7;
-	for(i = 2 ; i < 21 ; i++)
-	{
+	for(i = 2 ; i < 21 ; i++) {
 		move(yy,8);
 		
-		for(j = 0 ; j < 10 ; j++)
-		{
-			if(j == 0 || j == 9|| (i == 20 && (j > 1 || j < 8)))
-			{
+		for(j = 0 ; j < 10 ; j++) {
+			if(j == 0 || j == 9|| (i == 20 && (j > 1 || j < 8))) {
 				printw("□ ");
 			
 			}
@@ -148,13 +146,11 @@ int display_tetris_table_net(int speed, int host)
 	printw("\t□ □ □ □ □ □ □ □ □ □ ");	
 
 	move(0,0);
-	tetris2p();
+	tetris2p();	//테트리스 그림
 	char pt_char[50];
 	int point_buf,point_buf2;
 	int recv_cnt, recv_cnt2;
-	if(host_net ==1) //호스트인경우 
-	{		
-		
+	if(host_net ==1) { //호스트인경우			
 		send(server_sock,(char*)&flag,sizeof(int),0);
 		recv(server_sock,&flag, sizeof(int), 0);
 		if(flag == 1){ //중간에 flag 1을 받으면 상대방이 져서 먼저 함수를 통과한것 
@@ -170,8 +166,7 @@ int display_tetris_table_net(int speed, int host)
 		
 		yy = 7;
 		move(yy,32);
-		for(i = 2 ; i < 21 ; i++)
-		{
+		for(i = 2 ; i < 21 ; i++) {
 		move(yy,32);
 			printw("\t");
 			for(j = 0 ; j < 10 ; j++) {
@@ -194,7 +189,6 @@ int display_tetris_table_net(int speed, int host)
 			game= win2P;
 		printw("     SCORE: %d TOP SCORE: %d",point_buf2, best_point3); //2p스코어 출력 
 		
-
 		move(7,40);
 		for(int z=0; z<10; z++) //테트리스판뚜껑 
 		printw("□ ");
@@ -205,7 +199,6 @@ int display_tetris_table_net(int speed, int host)
 			move(p,58);
 			printw("□ ");
 		}
-		
 		
 		send(server_sock, *block_pointer, sizeof(*block_pointer), 0);
 		recv_cnt = recv(server_sock,&block_pointer3,sizeof(block_pointer3),0);
@@ -223,27 +216,22 @@ int display_tetris_table_net(int speed, int host)
 		move(yy,46);
 
 		
-			for(j = 0 ; j < 4 ; j++)
-			{
-				
+			for(j = 0 ; j < 4 ; j++) {				
 				if(block_pointer3[0][i][j] == 1)
 					printw("■ ");
 				else if(block_pointer3[0][i][j] == 0)
 					printw("  ");
-			
 			}
 		yy++;
-			}
-	
+		}	
 	}
-	if(host_net==2) //클라이언트인경우
-	{
+
+	if(host_net==2) { //클라이언트인경우
 		recv(client_sock,&flag,sizeof(int),0);
 		send(client_sock,(char*)&flag, sizeof(int), 0);
 		if(flag ==1){ //중간에 끊기는 경우 이긴것으로 판단 
 			lose_game = winmsg;
-			close(client_sock);
-		
+			close(client_sock);		
 		}
 		int point_buf =0;
 		recv_cnt2 = recv(client_sock,&tetris_table3,sizeof(tetris_table3),0);
@@ -275,8 +263,11 @@ int display_tetris_table_net(int speed, int host)
 		move(6,34);
 
 		recv_cnt2 = recv(client_sock,&point_buf,sizeof(int),0);
-		if(recv_cnt2 <0)
-			game= win2P;
+	
+		if (recv_cnt2 < 0) {
+			game = win2P;
+		}		
+
 		send(client_sock,(char*)&point3, sizeof(int), 0);
 		printw("     SCORE: %d TOP SCORE: %d",point_buf, best_point3); //2p스코어 출력 
 		move(7,40);
@@ -343,8 +334,7 @@ int display_tetris_table_net(int speed, int host)
 }
 
 /* 게임 시작시 호출되는 함수.   game변수를 참조하여 게임을 종료하거나 시작함 . 게임 시작시 refresh()함수가 콜백함수로 설정되고 타이머를 등록함. */
-int game_start_net(void)
-{
+int game_start_net(void) {
 	int _refresh_net(int);
 	static struct sigaction sa;
 	
@@ -403,8 +393,7 @@ int game_start_net(void)
   return 0;
 }
 
-void tetris2(void) //칸에 맞춰 출력하기 위한 메인화면 TETRIS 그림 
-{
+void tetris2(void) { //칸에 맞춰 출력하기 위한 메인화면 TETRIS 그림 
 	move(4,14);
 	printw("■ ■ ■   ■ ■ ■   ■ ■ ■   ■ ■ ■   ■   ■■ ■");
 	move(5,14);
@@ -415,10 +404,9 @@ void tetris2(void) //칸에 맞춰 출력하기 위한 메인화면 TETRIS 그�
 	printw("  ■     ■         ■     ■  ■    ■      ■\n");
 	move(8,14);	
 	printw("  ■     ■ ■ ■     ■     ■   ■   ■   ■ ■■\n");
-
 }
 
-void game_end_net(int aword){
+void game_end_net(int aword) {
 	if(set_ticker(game)==-1)
 		perror("set_ticker");
 
@@ -490,8 +478,7 @@ void game_end_net(int aword){
 }
 
 /* 타이머 콜백함수*/ 
-int _refresh_net(int signum)
-{
+int _refresh_net(int signum) {
 	static int downcount = 0;
 	static int setcount = 0;
 	static long speedcount = 0;
@@ -558,7 +545,7 @@ int _refresh_net(int signum)
 		setcount++;
 		setcount %= 10;
 	}
-	
+
 	ch = _getch();
 	switch(ch) {
 		case 97 :	move_block(LEFT);

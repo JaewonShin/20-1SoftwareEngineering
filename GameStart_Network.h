@@ -40,6 +40,9 @@
 #define winmsg 3
 #define losemsg 4
 
+extern int menu;
+extern int lose_game;
+
 int game_start_net(void); /* 게임 시작시 호출되는 함수.   game변수를 참조하여 게임을 종료하거나 시작함 . 게임 시작시 refresh()함수가 콜백함수로 설정되고 타이머를 등록함. */
 int _refresh_net(int);/* 타이머에 콜백함수로 등록되어 계속 새로고침 하면서 호출되는 함수. 키입력 확인,  화면새로고침, 한줄완성검사등의 계속 상태가 변함을 확인해야 되는 함수를 호출한다 */
 void tetris2(void); //칸에 맞춰 출력하기 위한 메인화면 TETRIS 그림 
