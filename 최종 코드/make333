@@ -1,0 +1,27 @@
+TETRIS_game : Main.o GameStart1P.o GameStart2P.o Server.o Client.o GameStart_Network.o Result.o
+	gcc Main.o GameStart1P.o GameStart2P.o Server.o Client.o Result.o GameStart_Network.o -lncursesw -o TETRIS_game
+
+GameStart1P.o : GameStart1P.c GameStart1P.h
+	gcc -std=c99 -c GameStart1P.c -lncursesw
+
+GameStart2P.o : GameStart2P.c GameStart2P.h
+	gcc -std=c99 -c GameStart2P.c -lncursesw	
+Server.o : Server.c GameStart_Network.h Client.h Server.h
+	gcc -std=c99 -c Server.c -lncursesw
+Client.o : Client.c GameStart_Network.h Client.h Server.h
+	gcc -std=c99 -c Client.c -lncursesw
+Result.o : Result.c Result.h
+	gcc -std=c99 -c Result.c -lncursesw
+Main.o : Main.c GameStart1P.h GameStart2P.h Server.h Client.h Result.h
+	gcc -std=c99 -c Main.c	-lncursesw
+
+
+
+clean:
+	rm -rf $(TARGET)
+	rm -rf *.o
+	rm -rf .tmp_versions
+
+
+distclean: clean
+	orm -rf /nfs/$(TARGET)
