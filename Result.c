@@ -51,12 +51,23 @@ int search_result(void)
 	initscr();
 	clear();
 	move(10,0);
+
 	printw("\n\n\t\t기록을 찾고싶은 이니셜을 입력하세요  : ");
 	scanw("%s%*c", name);
-	move(10,0);
-	//printw("\n\t\t\t\tTetris");
 
+	while(strlen(name)!=3){ //이니셜 세글자가 아닌경우에 사용자로부터 재입력요청
+    	move(12,53);
+    	addch(ACS_VLINE);
+    	printw("                                 "); //잘못입력한 글자를 지워주는 부분
+      	move(15,23);
+      	printw("세글자만 입력하세요:       ");
+      	move(15,44);
+     	scanw("%s%*c", name);
+ 	}
+
+	
 	clear();
+	
 
 	move(2,36);
 	printw("Tetris");
