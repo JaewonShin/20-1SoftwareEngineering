@@ -18,6 +18,21 @@
 #include "Result.h"
 
 
+/*
+//스코어 내용 구조체 새로 생성
+typedef struct tetris_score
+{
+	char name[30];
+    long point;
+    int year;
+    int month;
+    int day;
+    int hour;
+    int min;
+} score;
+*/
+
+
 /* 기록을 검색하는 함수*/
 int search_result(void)
 {
